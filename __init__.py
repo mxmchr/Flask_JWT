@@ -55,14 +55,14 @@ def protected():
     token = request.cookies.get("access_token")
 
     if not token:
-        return jsonify({"msg": "Accès refusé", "error": "Token manquant"}), 401
+        return jsonify({"msg": "Acces refuse", "error": "Token manquant"}), 401
 
     try:
         decoded_token = decode_token(token)  # Décodage manuel du token JWT
         current_user = decoded_token["sub"]  # L'identité est stockée sous "sub"
-        return jsonify({"msg": "Accès autorisé", "user": current_user}), 200
+        return jsonify({"msg": "Acces autorise", "user": current_user}), 200
     except Exception as e:
-        return jsonify({"msg": "Accès refusé", "error": str(e)}), 403
+        return jsonify({"msg": "Acces refuse", "error": str(e)}), 403
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------------
-PROJET JWT
+PROJET JWT TEST
 ------------------------------------------------------------------------------------------------------
 Quelles sont les notions qui vont être abordées au cours de cet atelier JWT ?
 Cet atelier a pour objectif de vous apprendre à utilser un générant et utilisant les jetons JWT pour protéger des API. Vous allez ensuite exploiter cette solution via la construction d'API sous le Framework Flask. Vous allez donc créer des API (des routes) mais également découvrir les Actions et les Secrets GitHUB pour au final mettre en service et exploiter une solution Web utilisant JWT. Large programme mais tout à fait accessible et ne nécessitant pas de base technique particulière. Juste de l'observation et de la rigueur dans votre travail.

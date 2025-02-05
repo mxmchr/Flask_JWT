@@ -1,12 +1,14 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask
+from flask import render_template
+from flask import json
+from flask import jsonify
+from flask import request
 from datetime import timedelta
-from flask_jwt_extended import (
-    create_access_token,
-    get_jwt_identity,
-    get_jwt,
-    jwt_required,
-    JWTManager,
-)
+
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 

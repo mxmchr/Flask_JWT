@@ -1,27 +1,31 @@
-from flask import Flask
-from flask import render_template
-from flask import json
-from flask import jsonify
-from flask import request
+from flask import Flask, render_template, jsonify, request, make_response
 from datetime import timedelta
-
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import (
+    create_access_token,
+    get_jwt_identity,
+    jwt_required,
+    JWTManager,
+    set_access_cookies,
+    unset_jwt_cookies
+)
 
 app = Flask(__name__)
 
 # Configuration du module JWT
 app.config["JWT_SECRET_KEY"] = "Ma_clé_secrete"  # Ma clé secrète
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=60)
+app.config["JWT_TOKEN_LOCATION"] = ["cookies"]  # Utilisation des cookies pour stocker le token
+app.config["JWT_COOKIE_SECURE"] = False  # Doit être True en production (HTTPS)
+app.config["JWT_COOKIE_HTTPONLY"] = True  # Empêche l'accès au cookie via JavaScript
+app.config["JWT_COOKIE_SAMESITE"] = "Lax"  # Évite certaines attaques CSRF
+
 jwt = JWTManager(app)
 
 @app.route('/')
-def hello_world():
+def home():
     return render_template('accueil.html')
 
-# Création d'une route qui vérifie l'utilisateur et retourne un Jeton JWT si ok.
+# Création d'une route qui vérifie l'utilisateur et stocke le token dans un cookie
 @app.route("/login", methods=["POST"])
 def login():
     username = request.json.get("username", None)
@@ -40,9 +44,21 @@ def login():
 
     # Création du token avec le rôle
     access_token = create_access_token(identity=username, additional_claims={"role": user["role"]})
-    return jsonify(access_token=access_token)
 
-# Route protégée accessible à tout utilisateur authentifié
+    # Création de la réponse avec un cookie contenant le token
+    response = jsonify({"msg": "Connexion réussie"})
+    set_access_cookies(response, access_token)  # Stocke le token dans un cookie
+
+    return response
+
+# Déconnexion : suppression du cookie
+@app.route("/logout", methods=["POST"])
+def logout():
+    response = jsonify({"msg": "Déconnexion réussie"})
+    unset_jwt_cookies(response)  # Supprime les cookies contenant le token
+    return response
+
+# Route protégée accessible uniquement via le cookie JWT
 @app.route("/protected", methods=["GET"])
 @jwt_required()
 def protected():
@@ -60,4 +76,4 @@ def admin():
     return jsonify({"msg": "Bienvenue, administrateur"}), 200
 
 if __name__ == "__main__":
-  app.run(debug=True)
+    app.run(debug=True)

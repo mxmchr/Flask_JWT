@@ -3,6 +3,7 @@ from flask import render_template
 from flask import json
 from flask import jsonify
 from flask import request
+from datetime import timedelta
 
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -13,6 +14,7 @@ app = Flask(__name__)
                                                                                                                                        
 # Configuration du module JWT
 app.config["JWT_SECRET_KEY"] = "Ma_clé_secrete"  # Ma clée privée
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=60)
 jwt = JWTManager(app)
 
 @app.route('/')

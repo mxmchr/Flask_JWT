@@ -64,5 +64,27 @@ def protected():
     except Exception as e:
         return jsonify({"msg": "Acces refuse", "error": str(e)}), 403
 
+# 🔹 Route accessible uniquement aux administrateurs
+@app.route("/admin", methods=["GET"])
+def admin():
+    token = request.cookies.get("access_token")
+
+    if not token:
+        return jsonify({"msg": "Acces refuse", "error": "Token manquant"}), 401
+
+    try:
+        decoded_token = decode_token(token)  # Décodage du token JWT
+        current_user = decoded_token["sub"]  # L'identité est stockée sous "sub"
+        role = decoded_token["role"]  # Le rôle de l'utilisateur est stocké sous "role"
+
+        # Vérification si l'utilisateur a le rôle "admin"
+        if role != "admin":
+            return jsonify({"msg": "Accès interdit", "error": "Administrateur requis"}), 403
+
+        return jsonify({"msg": "Bienvenue, administrateur", "user": current_user}), 200
+    except Exception as e:
+        return jsonify({"msg": "Acces refuse", "error": str(e)}), 403
+
+
 if __name__ == "__main__":
     app.run(debug=True)

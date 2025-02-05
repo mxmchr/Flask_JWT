@@ -2,10 +2,9 @@ from flask import Flask, render_template, jsonify, request, redirect, make_respo
 from datetime import timedelta
 from flask_jwt_extended import (
     create_access_token,
+    decode_token,
     get_jwt_identity,
-    jwt_required,
-    JWTManager,
-    verify_jwt_in_request
+    JWTManager
 )
 
 app = Flask(__name__)
@@ -50,20 +49,17 @@ def login():
 
     return response
 
-# Middleware pour récupérer le token depuis le cookie
-def jwt_from_cookie():
-    token = request.cookies.get("access_token")
-    if not token:
-        return jsonify({"msg": "Token manquant"}), 401
-    return token
-
-# 🔹 Route protégée accessible via le JWT stocké en cookie
+# 🔹 Route protégée accessible via le JWT stocké dans un cookie
 @app.route("/protected", methods=["GET"])
 def protected():
+    token = request.cookies.get("access_token")
+
+    if not token:
+        return jsonify({"msg": "Accès refusé", "error": "Token manquant"}), 401
+
     try:
-        token = jwt_from_cookie()
-        verify_jwt_in_request()  # Vérifie le JWT depuis le cookie
-        current_user = get_jwt_identity()
+        decoded_token = decode_token(token)  # Décodage manuel du token JWT
+        current_user = decoded_token["sub"]  # L'identité est stockée sous "sub"
         return jsonify({"msg": "Accès autorisé", "user": current_user}), 200
     except Exception as e:
         return jsonify({"msg": "Accès refusé", "error": str(e)}), 403

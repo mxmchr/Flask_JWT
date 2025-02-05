@@ -16,7 +16,7 @@ jwt = JWTManager(app)
 
 @app.route('/')
 def home():
-    return render_template("accueil.html")  # Redirige vers le formulaire de connexion
+    return render_template("accueil.html")
 
 # 🔹 Route pour afficher le formulaire de connexion
 @app.route("/login", methods=["GET"])
